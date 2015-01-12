@@ -1,0 +1,50 @@
+<?php
+
+//Importieren von notwendigem Programmcode, dieser wurde aus GrÃ¼nden der Ãbersichtlichkeit ausgelagert
+module_load_include('inc','openweathermap','install/openweathermap.getFields');
+module_load_include('inc','openweathermap','install/openweathermap.getInstances');
+
+
+//Importieren der Installationsfunktionen
+module_load_include('inc','diasim','install/diasim.createFields');
+module_load_include('inc','diasim','install/diasim.installDiasim');
+module_load_include('inc','diasim','install/diasim.setupDiasim');
+//Install der Contenttypes
+//Funktioniert nur Ã¼ber einen Rebuild der Contenttypes
+
+function diasim_install()
+{
+    //Vocabulary
+    //Content types
+    node_types_rebuild();
+    //installiert die Felder, die in unterschiedlichen Contenttypes verwendet werden
+    installDiasimFields();
+    //erzeugt fuer jeden Contenttype die entsprechenden Feld-Instanzen
+    install_diasim();
+    //fuer jede Wetterstation eine Simulation erzeugen
+    setup_diasim_nodes();
+}
+//Funktion die neben den Contenttypes, auch sÃ¤mtliche Nodes, Felder und Kommentare lÃ¶scht
+
+function diasim_uninstall()
+{
+    $contenttypes = array('alsim_diabrotica');
+    foreach ($contenttypes as $ct)
+    {
+        $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+        $result = db_query($sql, array(':type' => $ct));
+        $nodeids = array();
+        foreach ($result as $row)
+        {
+            $nodeids[] = $row->nid;
+        }
+        node_delete_multiple($nodeids);
+        node_type_delete($ct);
+        $instance = array('field_name' => 'comment_body','bundle' => 'comment_node_'.$ct,'entity_type' => 'comment');
+        field_delete_instance($instance);
+        $instance = array('field_name' => 'body','bundle' => $ct,'entity_type' => 'node');
+        field_delete_instance($instance);
+    }
+    //Purge all field information
+    field_purge_batch(1000);
+}

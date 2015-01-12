@@ -1,0 +1,20 @@
+<?php
+/*
+ * 
+ * hier kommt der CronJob rein für die Simulation
+ * 
+ */
+
+
+function diasim_node_info()
+{
+    $contenttypes = array();
+    $contenttypes['alsim_diasim'] = array(
+        'name' => t('Diabrotica Simulation'),
+        'base' => 'node_content',
+        'description' => t('Mit Hilfe diesen CTs werden die Sumlationsergebnisse je Area abgelegt'),
+        'has_title' => TRUE,
+        'title_label' => t('DiaSim')
+    );
+    return $contenttypes;
+}

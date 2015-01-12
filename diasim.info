@@ -1,0 +1,6 @@
+name = DiaSim
+description = Simulation der Abundanz des Diabritica Schädlings
+core = 7.x
+version = 0.1
+package = andylicht
+dependencies[] = openweathermap
